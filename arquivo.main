@@ -1,0 +1,48 @@
+/* =========================================================
+ * MENU E MAIN
+ * ========================================================= */
+void mostrarMenu(void) {
+    printf("\n=========================================\n");
+    printf("GERENCIADOR DE PERGUNTAS - QUIZ DE TI\n");
+    printf("=========================================\n");
+    printf("1 - Cadastrar pergunta\n");
+    printf("2 - Listar todas as perguntas\n");
+    printf("3 - Consultar perguntas por categoria\n");
+    printf("4 - Consultar perguntas por curso\n");
+    printf("5 - Atualizar pergunta\n");
+    printf("6 - Excluir pergunta\n");
+    printf("0 - Sair\n");
+    printf("-----------------------------------------\n");
+    printf("Escolha uma opcao: ");
+}
+ 
+int main(void) {
+    char entrada[100];
+    char opcao;
+ 
+    do {
+        mostrarMenu();
+        fgets(entrada, sizeof(entrada), stdin);
+        removerEnter(entrada);
+ 
+        /* so aceita se o usuario digitou exatamente 1 caractere */
+        if (strlen(entrada) == 1) {
+            opcao = entrada[0];
+        } else {
+            opcao = 'x';                 /* forca cair no default */
+        }
+ 
+        switch (opcao) {
+            case '1': cadastrarPergunta();     break;
+            case '2': listarPerguntas();       break;
+            case '3': consultarPorCategoria(); break;
+            case '4': consultarPorCurso();     break;
+            case '5': atualizarPergunta();     break;
+            case '6': excluirPergunta();       break;
+            case '0': printf("Encerrando o programa. Ate logo!\n"); break;
+            default:  printf("Opcao invalida! Digite um numero de 0 a 6.\n");
+        }
+    } while (opcao != '0');
+ 
+    return 0;
+}
