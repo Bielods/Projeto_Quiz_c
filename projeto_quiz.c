@@ -308,77 +308,93 @@ void cadastrarPergunta(void) {
  * ========================================================= */
 
 void listarPerguntas(void) {
-
-    int i;
-
-    if (total_perguntas == 0) {
-        printf("\nNenhuma pergunta cadastrada.\n");
+    FILE *arquivo = fopen("perguntas.csv", "r");
+    if (arquivo == NULL) {
+        printf("\nErro: nao foi possivel abrir o arquivo perguntas.csv\n");
         return;
     }
 
+    char linha[500];
+    int encontrou = 0;
+
     printf("\n");
     printf("=================================================================================\n");
-    printf("                    LISTA DE PERGUNTAS (%d)\n", total_perguntas);
+    printf("                    LISTA DE TODAS AS PERGUNTAS\n");
     printf("=================================================================================\n");
 
-    for (i = 0; i < total_perguntas; i++) {
+    while (fgets(linha, sizeof(linha), arquivo) != NULL) {
+        removerEnter(linha);
 
-        printf("\n[%02d] ID: %d\n",
-               i + 1,
-               perguntas[i].id);
+        char *id = strtok(linha, ";");
+        char *texto = strtok(NULL, ";");
+        char *categoria = strtok(NULL, ";");
+        char *curso = strtok(NULL, ";");
+        char *resposta = strtok(NULL, ";");
 
-        printf("CURSO: %s\n",
-               perguntas[i].curso);
-
-        printf("CATEGORIA: %s\n",
-               perguntas[i].categoria);
-
-        printf("PERGUNTA: %s\n",
-               perguntas[i].texto);
-
-        printf("RESPOSTA: %c\n",
-               perguntas[i].resposta);
-
-        printf("---------------------------------------------------------------------------------\n");
+        if (id != NULL && texto != NULL) {
+            printf("\nID: %s\n", id);
+            printf("Pergunta: %s\n", texto);
+            printf("Categoria: %s\n", categoria ? categoria : "-");
+            printf("Curso: %s\n", curso ? curso : "-");
+            printf("Resposta: %s\n", resposta ? resposta : "-");
+            printf("---------------------------------------------------------------------------------\n");
+            encontrou = 1;
+        }
     }
-}
 
+    if (!encontrou) {
+        printf("\nNenhuma pergunta cadastrada.\n");
+    }
+
+    fclose(arquivo);
+}
 
 /* =========================================================
  * CONSULTAR POR CATEGORIA
  * ========================================================= */
 
 void consultarPorCategoria(void) {
-
-    char categoria[50];
-
-    categoria_escolha(categoria);
-
-    int i;
+    char categoriaBusca[50];
     int encontrou = 0;
 
+    printf("\nDigite a categoria desejada: ");
+    fgets(categoriaBusca, sizeof(categoriaBusca), stdin);
+    removerEnter(categoriaBusca);
+
+    FILE *arquivo = fopen("perguntas.csv", "r");
+    if (arquivo == NULL) {
+        printf("\nErro: nao foi possivel abrir o arquivo perguntas.csv\n");
+        return;
+    }
+
+    char linha[500];
+
     printf("\n=========================================\n");
-    printf(" PERGUNTAS - %s\n", categoria);
+    printf(" PERGUNTAS DA CATEGORIA: %s\n", categoriaBusca);
     printf("=========================================\n");
 
-    for (i = 0; i < total_perguntas; i++) {
+    while (fgets(linha, sizeof(linha), arquivo) != NULL) {
+        removerEnter(linha);
 
-        if (strcmp(perguntas[i].categoria, categoria) == 0) {
+        char *id = strtok(linha, ";");
+        char *texto = strtok(NULL, ";");
+        char *categoria = strtok(NULL, ";");
+        char *curso = strtok(NULL, ";");
+        char *resposta = strtok(NULL, ";");
 
-            printf("\nID: %d\n", perguntas[i].id);
-            printf("Pergunta: %s\n", perguntas[i].texto);
-            printf("Curso: %s\n", perguntas[i].curso);
-            printf("Resposta: %c\n", perguntas[i].resposta);
-
-            printf("-----------------------------------------\n");
-
-            encontrou = 1;
+        if (id != NULL && texto != NULL && categoria != NULL) {
+            if (strcmp(categoria, categoriaBusca) == 0) {
+                printf("\n[%s] %s - %s - %s\n", id, texto, curso ? curso : "-", resposta ? resposta : "-");
+                encontrou = 1;
+            }
         }
     }
 
     if (!encontrou) {
         printf("\nNenhuma pergunta encontrada nessa categoria.\n");
     }
+
+    fclose(arquivo);
 }
 
 
@@ -387,36 +403,47 @@ void consultarPorCategoria(void) {
  * ========================================================= */
 
 void consultarPorCurso(void) {
-
-    char curso[50];
-
-    curso_escolha(curso);
-
-    int i;
+    char cursoBusca[50];
     int encontrou = 0;
 
+    printf("\nDigite o curso desejado (CC, ES ou ADS): ");
+    fgets(cursoBusca, sizeof(cursoBusca), stdin);
+    removerEnter(cursoBusca);
+
+    FILE *arquivo = fopen("perguntas.csv", "r");
+    if (arquivo == NULL) {
+        printf("\nErro: nao foi possivel abrir o arquivo perguntas.csv\n");
+        return;
+    }
+
+    char linha[500];
+
     printf("\n=========================================\n");
-    printf(" PERGUNTAS - %s\n", curso);
+    printf(" PERGUNTAS DO CURSO: %s\n", cursoBusca);
     printf("=========================================\n");
 
-    for (i = 0; i < total_perguntas; i++) {
+    while (fgets(linha, sizeof(linha), arquivo) != NULL) {
+        removerEnter(linha);
 
-        if (strcmp(perguntas[i].curso, curso) == 0) {
+        char *id = strtok(linha, ";");
+        char *texto = strtok(NULL, ";");
+        char *categoria = strtok(NULL, ";");
+        char *curso = strtok(NULL, ";");
+        char *resposta = strtok(NULL, ";");
 
-            printf("\nID: %d\n", perguntas[i].id);
-            printf("Pergunta: %s\n", perguntas[i].texto);
-            printf("Categoria: %s\n", perguntas[i].categoria);
-            printf("Resposta: %c\n", perguntas[i].resposta);
-
-            printf("-----------------------------------------\n");
-
-            encontrou = 1;
+        if (id != NULL && texto != NULL && curso != NULL) {
+            if (strcmp(curso, cursoBusca) == 0) {
+                printf("\n[%s] %s - %s - %s\n", id, texto, categoria ? categoria : "-", resposta ? resposta : "-");
+                encontrou = 1;
+            }
         }
     }
 
     if (!encontrou) {
         printf("\nNenhuma pergunta encontrada nesse curso.\n");
     }
+
+    fclose(arquivo);
 }
 
 
