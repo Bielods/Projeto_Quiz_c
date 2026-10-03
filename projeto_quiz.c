@@ -537,6 +537,57 @@ void excluirPergunta(void) {
     }
 }
 
+/* =========================================================
+ * EXIBIR RESUMO ESTATÍSTICO POR CURSO
+ * ========================================================= */
+void resumoPorCurso(void) {
+    FILE *arquivo = fopen("perguntas.csv", "r");
+    if (arquivo == NULL) {
+        printf("\nErro: nao foi possivel abrir o arquivo perguntas.csv\n");
+        return;
+    }
+
+    int cc = 0, es = 0, ads = 0, outros = 0;
+    char linha[500];
+
+    while (fgets(linha, sizeof(linha), arquivo) != NULL) {
+        removerEnter(linha);
+        if (strlen(linha) == 0) continue;
+
+        char *id = strtok(linha, ";");
+        char *texto = strtok(NULL, ";");
+        char *categoria = strtok(NULL, ";");
+        char *curso = strtok(NULL, ";");
+        char *resposta = strtok(NULL, ";"); // Quinta chamada obrigatória para isolar o curso
+
+        if (curso != NULL) {
+            if (strcmp(curso, "CC") == 0) {
+                cc++;
+            } else if (strcmp(curso, "ES") == 0) {
+                es++;
+            } else if (strcmp(curso, "ADS") == 0) {
+                ads++;
+            } else {
+                outros++;
+            }
+        }
+    }
+
+    fclose(arquivo);
+
+    printf("\n=========================================\n");
+    printf("         RESUMO ESTATISTICO POR CURSO\n");
+    printf("=========================================\n");
+    printf("Ciencia da Computacao (CC)     : %d pergunta(s)\n", cc);
+    printf("Engenharia de Software (ES)    : %d pergunta(s)\n", es);
+    printf("Analise e Des. Sistemas (ADS)  : %d pergunta(s)\n", ads);
+    if (outros > 0) {
+        printf("Outros/Nao identificados       : %d pergunta(s)\n", outros);
+    }
+    printf("-----------------------------------------\n");
+    printf("Total Geral no Banco           : %d pergunta(s)\n", cc + es + ads + outros);
+    printf("=========================================\n");
+}
 
 /* =========================================================
  * MENU
@@ -554,6 +605,7 @@ void mostrarMenu(void) {
     printf("4 - Consultar perguntas por curso\n");
     printf("5 - Atualizar pergunta\n");
     printf("6 - Excluir pergunta\n");
+    printf("7 - Exibir resumo estatistico por curso\n"); 
     printf("0 - Sair\n");
 
     printf("-----------------------------------------\n");
@@ -624,15 +676,18 @@ int main(void) {
             case '6':
                 excluirPergunta();
                 break;
-
-
+            
+            case '7':
+                resumoPorCurso();
+                break;
+    
             case '0':
                 printf("\nEncerrando o programa. Ate logo!\n");
                 break;
 
 
             default:
-                printf("\nOpcao invalida! Digite um numero de 0 a 6.\n");
+                printf("\nOpcao invalida! Digite um numero de 0 a 7.\n");
         }
 
     } while (opcao != '0');
