@@ -13,8 +13,8 @@ typedef struct {
     int id;
     char texto[250];
     char categoria[50];
-    char curso[50];
-    char resposta;
+    char curso[10];
+    char resposta[5];
 } Pergunta;
 
 
@@ -83,12 +83,11 @@ void categoria_escolha(char *categoria) {
 
 void curso_escolha(char *curso) {
     int opcao_curso;
-
     do {
         printf("\nEscolha o curso:\n");
-        printf("1 - Analise e Desenvolvimento de Sistemas\n");
-        printf("2 - Sistemas de Informacao\n");
-        printf("3 - Ciencia da Computacao\n");
+        printf("1 - Analise e Desenvolvimento de Sistemas (ADS)\n");
+        printf("2 - Engenharia de Software (ES)\n");
+        printf("3 - Ciencia da Computacao (CC)\n");
         printf("Opcao: ");
 
         if (scanf("%d", &opcao_curso) != 1) {
@@ -99,25 +98,13 @@ void curso_escolha(char *curso) {
         }
 
         switch (opcao_curso) {
-            case 1:
-                strcpy(curso, "Analise e Desenvolvimento de Sistemas");
-                break;
-
-            case 2:
-                strcpy(curso, "Sistemas de Informacao");
-                break;
-
-            case 3:
-                strcpy(curso, "Ciencia da Computacao");
-                break;
-
-            default:
-                printf("Opcao invalida, tente novamente.\n");
+            case 1: strcpy(curso, "ADS"); break;
+            case 2: strcpy(curso, "ES"); break;
+            case 3: strcpy(curso, "CC"); break;
+            default: printf("Opcao invalida, tente novamente.\n");
         }
-
     } while (opcao_curso < 1 || opcao_curso > 3);
 }
-
 
 /* =========================================================
  * CARREGAR PERGUNTAS DO CSV
@@ -179,18 +166,15 @@ void carregarPerguntas(void) {
 
 
         /* RESPOSTA */
-        token = strtok(NULL, ";");
+ token = strtok(NULL, ";");
 
         if (token != NULL) {
-            perguntas[total_perguntas].resposta =
-                toupper((unsigned char)token[0]);
+            strcpy(perguntas[total_perguntas].resposta, token);
         }
 
         total_perguntas++;
     }
-
-    fclose(arquivo);
-
+    
     printf("\n=========================================\n");
     printf(" %d PERGUNTA(S) CARREGADA(S) DO CSV\n",
            total_perguntas);
@@ -215,7 +199,7 @@ void salvarPerguntas(void) {
 
     for (i = 0; i < total_perguntas; i++) {
 
-        fprintf(arquivo, "%d;%s;%s;%s;%c\n",
+        fprintf(arquivo, "%d;%s;%s;%s;%s\n",
                 perguntas[i].id,
                 perguntas[i].texto,
                 perguntas[i].categoria,
@@ -260,25 +244,22 @@ void cadastrarPergunta(void) {
     curso_escolha(p1.curso);
 
 
+       int resp_opcao;
     do {
-
-        printf("\nResposta correta [S/N]: ");
-
-        scanf(" %c", &p1.resposta);
-
-        while (getchar() != '\n');
-
-        p1.resposta =
-            toupper((unsigned char)p1.resposta);
-
-        if (p1.resposta != 'S' &&
-            p1.resposta != 'N') {
-
-            printf("Resposta invalida, digite S ou N.\n");
+        printf("\nResposta correta:\n1 - SIM\n2 - NAO\nOpcao: ");
+        if (scanf("%d", &resp_opcao) != 1) {
+            while (getchar() != '\n');
+            resp_opcao = 0;
+        } else {
+            while (getchar() != '\n');
         }
 
-    } while (p1.resposta != 'S' &&
-             p1.resposta != 'N');
+        if (resp_opcao == 1) strcpy(p1.resposta, "SIM");
+        else if (resp_opcao == 2) strcpy(p1.resposta, "NAO");
+        else printf("Opcao invalida! Escolha 1 ou 2.\n");
+
+    } while (resp_opcao != 1 && resp_opcao != 2);
+
 
 
     /* Coloca a pergunta no vetor */
@@ -298,7 +279,7 @@ void cadastrarPergunta(void) {
     printf("Texto: %s\n", p1.texto);
     printf("Categoria: %s\n", p1.categoria);
     printf("Curso: %s\n", p1.curso);
-    printf("Resposta: %c\n", p1.resposta);
+    printf("Resposta: %s\n", p1.resposta);
     printf("-----------------------------------------\n");
 }
 
@@ -450,7 +431,6 @@ void consultarPorCurso(void) {
 /* =========================================================
  * ATUALIZAR PERGUNTA
  * ========================================================= */
-
 void atualizarPergunta(void) {
 
     int id;
@@ -482,19 +462,21 @@ void atualizarPergunta(void) {
             curso_escolha(perguntas[i].curso);
 
 
+            int resp_opcao;
             do {
+                printf("\nNova resposta correta:\n1 - SIM\n2 - NAO\nOpcao: ");
+                if (scanf("%d", &resp_opcao) != 1) {
+                    while (getchar() != '\n');
+                    resp_opcao = 0;
+                } else {
+                    while (getchar() != '\n');
+                }
 
-                printf("\nNova resposta correta [S/N]: ");
+                if (resp_opcao == 1) strcpy(perguntas[i].resposta, "SIM");
+                else if (resp_opcao == 2) strcpy(perguntas[i].resposta, "NAO");
+                else printf("Opcao invalida! Escolha 1 ou 2.\n");
 
-                scanf(" %c", &perguntas[i].resposta);
-
-                while (getchar() != '\n');
-
-                perguntas[i].resposta =
-                    toupper((unsigned char)perguntas[i].resposta);
-
-            } while (perguntas[i].resposta != 'S' &&
-                     perguntas[i].resposta != 'N');
+            } while (resp_opcao != 1 && resp_opcao != 2);
 
 
             salvarPerguntas();
@@ -509,7 +491,6 @@ void atualizarPergunta(void) {
         printf("\nPergunta nao encontrada.\n");
     }
 }
-
 
 /* =========================================================
  * EXCLUIR PERGUNTA
