@@ -8,7 +8,7 @@
 3. [Gabriel Venancio Lima]
 4. [Isabelle Boato de Souza ]
 
-**Apresentacao em video:** [[link do YouTube](https://youtu.be/-DWLz1PWaDM)]
+**Apresentacao em video:** [(https://youtu.be/-DWLz1PWaDM)]
 
 ## Descricao
 
